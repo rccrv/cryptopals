@@ -7,7 +7,7 @@ fn main() {
     for i in (0..s1.len()).step_by(2) {
         n1 = u8::from_str_radix( &s1[i..i+2], 16).unwrap_or(0);
         n2 = u8::from_str_radix( &s2[i..i+2], 16).unwrap_or(0);
-        r.push((n1 ^ n2) as char);
+        r += format!("{:x}", n1 ^ n2).as_mut_str();
     }
     println!("{}", r);
 }
