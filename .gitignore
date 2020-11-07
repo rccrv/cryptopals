@@ -1,0 +1,4 @@
+.vscode
+.ionide
+Cargo.lock
+*.swp
