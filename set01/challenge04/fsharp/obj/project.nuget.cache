@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "ukaHyVTWToiQEq/t5GPb0S2OrLNYKYwA/XC63r8g8Qb8woQmayXvV273q+Bmi9vWgeYRQ/hTRkDFDKHVlQSPrg==",
+  "success": true,
+  "projectFilePath": "/home/ricardo/hacking/toys/cryptopals/set01/challenge04/fsharp/challenge04.fsproj",
+  "expectedPackageFiles": [
+    "/home/ricardo/.nuget/packages/fsharp.core/4.7.2/fsharp.core.4.7.2.nupkg.sha512"
+  ],
+  "logs": []
+}

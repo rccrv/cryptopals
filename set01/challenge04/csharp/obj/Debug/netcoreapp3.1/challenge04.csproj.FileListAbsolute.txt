@@ -1,0 +1,13 @@
+/home/ricardo/hacking/toys/cryptopals/set01/challenge04/csharp/bin/Debug/netcoreapp3.1/challenge04
+/home/ricardo/hacking/toys/cryptopals/set01/challenge04/csharp/bin/Debug/netcoreapp3.1/challenge04.deps.json
+/home/ricardo/hacking/toys/cryptopals/set01/challenge04/csharp/bin/Debug/netcoreapp3.1/challenge04.runtimeconfig.json
+/home/ricardo/hacking/toys/cryptopals/set01/challenge04/csharp/bin/Debug/netcoreapp3.1/challenge04.runtimeconfig.dev.json
+/home/ricardo/hacking/toys/cryptopals/set01/challenge04/csharp/bin/Debug/netcoreapp3.1/challenge04.dll
+/home/ricardo/hacking/toys/cryptopals/set01/challenge04/csharp/bin/Debug/netcoreapp3.1/challenge04.pdb
+/home/ricardo/hacking/toys/cryptopals/set01/challenge04/csharp/obj/Debug/netcoreapp3.1/challenge04.csprojAssemblyReference.cache
+/home/ricardo/hacking/toys/cryptopals/set01/challenge04/csharp/obj/Debug/netcoreapp3.1/challenge04.AssemblyInfoInputs.cache
+/home/ricardo/hacking/toys/cryptopals/set01/challenge04/csharp/obj/Debug/netcoreapp3.1/challenge04.AssemblyInfo.cs
+/home/ricardo/hacking/toys/cryptopals/set01/challenge04/csharp/obj/Debug/netcoreapp3.1/challenge04.csproj.CoreCompileInputs.cache
+/home/ricardo/hacking/toys/cryptopals/set01/challenge04/csharp/obj/Debug/netcoreapp3.1/challenge04.dll
+/home/ricardo/hacking/toys/cryptopals/set01/challenge04/csharp/obj/Debug/netcoreapp3.1/challenge04.pdb
+/home/ricardo/hacking/toys/cryptopals/set01/challenge04/csharp/obj/Debug/netcoreapp3.1/challenge04.genruntimeconfig.cache
