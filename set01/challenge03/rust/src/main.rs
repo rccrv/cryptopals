@@ -29,7 +29,7 @@ const ALPHABET: [(char, f64); 26] = [
     ('z', 0.00074),
 ];
 
-fn chi_square(xored: String) -> f64 {
+fn chisquare(xored: String) -> f64 {
     let mut count: [u16; 26] = [0; 26];
     let mut sum: f64 = 0.0;
 
@@ -51,11 +51,9 @@ fn chi_square(xored: String) -> f64 {
     sum
 }
 
-fn main() {
-    let s = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
+fn analyzestring(s: &str) -> (char, f64, String) {
     let mut v: Vec<u8> = Vec::new();
-    let mut r = String::new();
-    let mut bestfit: (char, f64) = ('\0', f64::INFINITY);
+    let mut bestfit = ('\0', f64::INFINITY, String::new());
     v.extend(('0' as u8)..(('9' as u8) + 1));
     v.extend(('a' as u8)..(('z' as u8) + 1));
     v.extend(('A' as u8)..(('Z' as u8) + 1));
@@ -71,11 +69,17 @@ fn main() {
 
     for i in v {
         let xored: String = bytes.iter().map(|b| char::from(*b ^ i)).collect();
-        let n = chi_square(xored.clone().to_lowercase());
+        let n = chisquare(xored.clone().to_lowercase());
         if n < bestfit.1 {
-            bestfit = (char::from(i), n);
-            r = xored;
+            bestfit = (char::from(i), n, xored);
         }
     }
-    println!("Decoded by using {}\nResult: {}", bestfit.0, r);
+
+    bestfit
+}
+
+fn main() {
+    let s = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
+    let bestfit = analyzestring(&s);
+    println!("Decoded by using {}\nResult: {}", bestfit.0, bestfit.2);
 }

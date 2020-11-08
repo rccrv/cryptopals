@@ -25,7 +25,7 @@ const tuple<char, double> ALPHABET[26] = {
     make_tuple('y', 0.01974), make_tuple('z', 0.00074),
 };
 
-double chi_square(string &xored) {
+double chisquare(string &xored) {
   double sum = 0.0;
   uint16_t count[26] = {0};
 
@@ -52,12 +52,9 @@ double chi_square(string &xored) {
   return sum;
 }
 
-int main() {
-  string s =
-      "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
-  string r = "";
-  tuple<char, double> bestfit =
-      make_tuple('\0', numeric_limits<double>::infinity());
+tuple<char, double, string> analyzestring(const string &s) {
+  tuple<char, double, string> bestfit =
+      make_tuple('\0', numeric_limits<double>::infinity(), "");
   vector<uint8_t> bytes = {};
   vector<uint8_t> l = {};
   for (int i = 65; i < 65 + 26; i++) {
@@ -79,14 +76,21 @@ int main() {
     auto lower = xored;
     transform(lower.begin(), lower.end(), lower.begin(),
               [](unsigned char c) -> unsigned char { return tolower(c); });
-    auto n = chi_square(lower);
+    auto n = chisquare(lower);
     if (n < get<1>(bestfit)) {
-      bestfit = make_tuple(c, n);
-      r = xored;
+      bestfit = make_tuple(c, n, xored);
     }
   }
 
-  cout << "Decoded by using " << get<0>(bestfit) << "\nResult: " << r << '\n';
+  return bestfit;
+}
+
+int main() {
+  string s =
+      "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
+  auto bestfit = analyzestring(s);
+
+  cout << "Decoded by using " << get<0>(bestfit) << "\nResult: " << get<2>(bestfit) << '\n';
 
   return 0;
 }

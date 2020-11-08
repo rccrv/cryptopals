@@ -41,18 +41,22 @@ let rec chisquare (xored : string) : double =
            | c when Char.IsPunctuation c -> 5.0 + chisquare (xored.[1..])
            | _ -> Double.PositiveInfinity
 
-[<EntryPoint>]
-let main argv =
-    let s = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
+let analyzestring (s : string) =
     let l = [ seq { 'a' .. 'z' }; seq { 'A' .. 'Z' }; seq { '0' .. '9'} ] |> Seq.concat
-    let mutable bestfit = ('\000', Double.PositiveInfinity)
-    let mutable r = ""
+    let mutable bestfit = ('\000', Double.PositiveInfinity, "")
     let bytes = seq { for i in 0 .. 2 .. s.Length - 1 do Convert.ToByte(s.[i..i+1], 16) } |> List.ofSeq
     for c in l do
         let xored = String.concat "" <| (List.map ((fun b -> char (b ^^^ byte c)) >> string) bytes)
         let n = chisquare(xored.ToLower())
-        if n < snd bestfit then
-            bestfit <- (c, n)
-            r <- xored
-    printfn "Decoded by using %c\nResult: %s" (fst bestfit) r
+        let (_, bn, _) = bestfit
+        if n < bn then
+            bestfit <- (c, n, xored)
+    bestfit
+
+[<EntryPoint>]
+let main argv =
+    let s = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
+    let bestfit = analyzestring s
+    let (c, _, r) = bestfit
+    printfn "Decoded by using %c\nResult: %s" c r
     0

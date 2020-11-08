@@ -73,12 +73,10 @@ namespace challenge03
 
             return sum;
         }
-        static void Main(string[] args)
-        {
-            string s = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
-            string r = "";
+
+        static (char, double, string) analyzestring(string s) {
             List<byte> bytes = new List<byte>();
-            (char, double) bestfit = ('\0', Double.PositiveInfinity);
+            (char, double, string) bestfit = ('\0', Double.PositiveInfinity, "");
             var l = Enumerable.Range(48, 10).ToList();
             l.AddRange(Enumerable.Range(65, 26).ToList());
             l.AddRange(Enumerable.Range(97, 26).ToList());
@@ -94,12 +92,18 @@ namespace challenge03
                 var n = chi_square(xored.ToLower());
                 if (n < bestfit.Item2)
                 {
-                    bestfit = ((char)k, n);
-                    r = xored;
+                    bestfit = ((char)k, n, xored);
                 }
             }
 
-            Console.WriteLine($"Decoded by using {bestfit.Item1}\nResult: {r}");
+            return bestfit;
+        }
+        static void Main(string[] args)
+        {
+            string s = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
+            var bestfit = analyzestring(s);
+
+            Console.WriteLine($"Decoded by using {bestfit.Item1}\nResult: {bestfit.Item3}");
         }
     }
 }
