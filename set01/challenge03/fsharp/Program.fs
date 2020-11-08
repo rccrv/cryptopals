@@ -29,27 +29,17 @@ let ALPHABET =  [|
     ('z', 0.00074)
 |]
 
-let chisquare (xored: string) : double =
-    let mutable sum = 0.0
-    let mutable count = Array.init 26 uint16
-    for c in xored do
-        if Char.IsLower(c) then
-            count.[int c - int 'a'] <- count.[int c - int 'a'] + 1us
-        elif Char.IsNumber(c) then
-            sum <- sum + 5.0
-        elif Char.IsWhiteSpace(c) then
-            sum <- sum + 0.1
-        elif Char.IsPunctuation(c) then
-            sum <- sum + 5.0
-        else
-            sum <- Double.PositiveInfinity
-
-    if not <| Double.IsInfinity(sum) then
-        for i in seq { 0 .. 25} do
-            let o = double count.[i]
-            let e = snd ALPHABET.[i]
-            sum <- sum + (o - e) * (o - e) / e
-    sum
+let rec chisquare (xored : string) : double =
+    match xored with
+    | xored when String.IsNullOrEmpty xored -> 0.0
+    | _ -> let c = xored.[0]
+           match c with
+           | c when Char.IsLower c -> let e = snd ALPHABET.[int c - int 'a']
+                                      ((1.0 - e) ** 2.0) / e + chisquare (xored.[1..])
+           | c when Char.IsNumber c -> 5.0 + chisquare (xored.[1..])
+           | c when Char.IsWhiteSpace c -> 0.1 + chisquare (xored.[1..])
+           | c when Char.IsPunctuation c -> 5.0 + chisquare (xored.[1..])
+           | _ -> Double.PositiveInfinity
 
 [<EntryPoint>]
 let main argv =
