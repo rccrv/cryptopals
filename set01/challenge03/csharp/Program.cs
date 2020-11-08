@@ -6,7 +6,7 @@ namespace challenge03
 {
     class Program
     {
-        static private (char, double)[] ALPHABET = {
+        private static (char, double)[] ALPHABET = {
             ('a', 0.08167),
             ('b', 0.01492),
             ('c', 0.02782),
