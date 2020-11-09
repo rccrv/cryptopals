@@ -1,0 +1,1 @@
+C:\Users\ricardo.carvalho\Documents\Programming\Toys\cryptopals\set01\challenge06\rust\target\debug\challenge06.exe: C:\Users\ricardo.carvalho\Documents\Programming\Toys\cryptopals\set01\challenge06\rust\src\main.rs
