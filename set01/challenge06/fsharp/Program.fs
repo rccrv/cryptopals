@@ -1,4 +1,5 @@
 ﻿open System
+open System.IO
 open System.Numerics
 
 let hd s1 s2 =
@@ -6,10 +7,37 @@ let hd s1 s2 =
     let sum = Seq.fold lhd 0 (Seq.zip s1 s2)
     sum
 
+type Analyze =
+    struct
+        val content: list<byte>
+        new (fname: string) = {
+            content = Convert.FromBase64String (File.ReadAllText fname) |> List.ofArray
+        }
+
+        member this.ProcessKeysize(keysize: int) =
+            let s = [|
+                new string (List.map (char) this.content.[0..(keysize - 1)] |> Array.ofList);
+                new string (List.map (char) this.content.[keysize..(2 * keysize - 1)] |> Array.ofList);
+                new string (List.map (char) this.content.[(2 * keysize)..(3 * keysize - 1)] |> Array.ofList);
+                new string (List.map (char) this.content.[(3 * keysize)..(4 * keysize - 1)] |> Array.ofList);
+            |]
+            let indices = [|
+                (0, 1); (0, 2); (0, 3);
+                (1, 2); (1, 3); (2, 3)
+            |]
+            let mutable v = []
+            for i in indices do
+                v <- v @ [(hd s.[fst i] s.[snd i]) / keysize]
+                printfn "%A" v
+            let r = List.sum v / indices.Length
+            r
+    end
+
 [<EntryPoint>]
 let main argv =
-    let s1 = "this is a test"
-    let s2 = "wokka wokka!!!"
-    let r = hd s1 s2
-    printfn "%d" r
+    if argv.Length >= 1 then
+        let analyze = Analyze argv.[0]
+        for i in seq { 2 .. 40 } do
+            let r = analyze.ProcessKeysize i
+            printfn "(%d, %d)" i r
     0
