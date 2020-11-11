@@ -10,8 +10,10 @@ let hd s1 s2 =
 type Analyze =
     struct
         val content: list<byte>
+        val mutable smallerkeys: list<int>
         new (fname: string) = {
             content = Convert.FromBase64String (File.ReadAllText fname) |> List.ofArray
+            smallerkeys = [0; 0; 0]
         }
 
         member this.ProcessKeysize(keysize: int) =
@@ -27,9 +29,8 @@ type Analyze =
             |]
             let mutable v = []
             for i in indices do
-                v <- v @ [(hd s.[fst i] s.[snd i]) / keysize]
-                printfn "%A" v
-            let r = List.sum v / indices.Length
+                v <- v @ [(float (hd s.[fst i] s.[snd i])) / (float keysize)]
+            let r = List.sum v / (float indices.Length)
             r
     end
 
@@ -39,5 +40,5 @@ let main argv =
         let analyze = Analyze argv.[0]
         for i in seq { 2 .. 40 } do
             let r = analyze.ProcessKeysize i
-            printfn "(%d, %d)" i r
+            printfn "(%d, %f)" i r
     0
