@@ -51,16 +51,19 @@ type Analyze =
             ()
 
         member this.BreakString() =
-            let mutable v = []
             for i in this.smallerkeys do
+                let mutable v = []
+                let mutable s = (Seq.map (char >> string) this.content) |> String.concat ""
                 let divisions = this.content.Length / i
-                (*
-                for j in seq { 1 .. divisions} do
-                    v <- v @ [ this.content[j..j-1] ]
-                    0 |> ignore
-                *)
                 let lastsize = this.content.Length - i * divisions
-                printfn "%d, %d" divisions lastsize
+                while s.Length > 0 do
+                    if s.Length > i then
+                        v <- v @ [s.[0..i-1]]
+                        s <- s.[i..]
+                    else
+                        v <- v @ [s.[0..lastsize-1]]
+                        s <- ""
+                printfn "%A, %A" v.[0].Length v.[v.Length - 1].Length
             ()
     end
 
@@ -69,11 +72,7 @@ let main argv =
     if argv.Length >= 1 then
         let analyze = Analyze(argv.[0], 4)
         printfn "%d" analyze.content.Length
-        analyze.ProbableKeysizes(seq { 2 .. 40 }) |> ignore
+        analyze.ProbableKeysizes(seq { 2 .. 40 })
         printfn "%A" analyze.smallerkeys
-        let firstkey = analyze.smallerkeys.[0]
-        let s = analyze.content.[0..firstkey-1]
-        let news = (Seq.map (char >> string) s) |> String.concat ""
-        printfn "%A"  news
         analyze.BreakString() |> ignore
     0
