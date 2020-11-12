@@ -85,28 +85,29 @@ type Analyze =
 
                 r
 
-            for i in this.smallerkeys do
-                let mutable v = []
+            let transpose (s : string) (keysize : int) =
+                let rec transposef (v : array<string>) (element : int) =
+                    let mutable r = []
+                    if element < v.[v.Length - 1].Length then
+                        let se = seq { for i in 0 .. v.Length - 1 do v.[i].[element] } |> Array.ofSeq
+                        r <- [se] @ transposef v (element + 1)
+                    else
+                        let se = seq { for i in 0 .. v.Length - 2 do v.[i].[element] } |> Array.ofSeq
+                        r <- [se] @ transposef v.[0..v.Length - 2] (element + 1)
+                    r
 
+                let v = breakstring s keysize |> Array.ofList
+                printfn "%d, %d, %d" v.Length v.[0].Length keysize
+                let r = transposef v 0
+                r
+
+            for i in this.smallerkeys do
                 let mutable s =
                     (Seq.map (char >> string) this.content)
                     |> String.concat ""
 
-                let v = breakstring s i
-
-                let transposed =
-                    fun i ->
-                        new string((List.map (fun (c: string) -> c.[i]) v)
-                                   |> Array.ofList)
-
-                // TODO: Continue from here. Chi square the transposed and them concatenate the chars into a string
-                for k in 0 .. i - 1 do
-                    let s = transposed k
-                    ()
-
-                printfn "%d" v.Length
-
-                printfn "%A, %A" v.[0].Length v.[v.Length - 1].Length
+                let t = transpose s i
+                printfn "%A" t
     end
 
 [<EntryPoint>]
