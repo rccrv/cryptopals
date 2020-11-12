@@ -7,8 +7,8 @@ let main argv =
     let mutable r = ""
 
     for i in seq { 0 .. 2 .. s1.Length - 1 } do
-        let n1 = Convert.ToByte(s1.[i..i+1], 16)
-        let n2 = Convert.ToByte(s2.[i..i+1], 16)
+        let n1 = Convert.ToByte(s1.[i..i + 1], 16)
+        let n2 = Convert.ToByte(s2.[i..i + 1], 16)
         r <- r + sprintf "%x" (n1 ^^^ n2)
 
     printfn "%s" r
