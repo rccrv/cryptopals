@@ -58,8 +58,8 @@ let analyzestring (s: string) =
     let l =
         [ seq { 'a' .. 'z' }
           seq { 'A' .. 'Z' }
-          seq { ':' .. '@'}
-          seq { ' ' .. '/'}
+          seq { ':' .. '@' }
+          seq { ' ' .. '/' }
           seq { '0' .. '9' } ]
         |> Seq.concat
 
@@ -182,24 +182,33 @@ type Analyze =
                 let s =
                     (Seq.map (char >> string) this.content)
                     |> String.concat ""
+
                 let mutable k = ""
 
                 let v = breakstring s i |> Array.ofList
                 let r = transpose v i 0
+
                 for j in r do
                     let bestfit = analyzestring j
                     let (c, _, _) = bestfit
                     k <- k + (string c)
-                key <- key @ [k]
+
+                key <- key @ [ k ]
+
             key
     end
 
-let unxorrepeatedkey (s : string) (key : string) =
+let unxorrepeatedkey (s: string) (key: string) =
     let mutable r = ""
-    let cycle = Seq.init s.Length (fun i -> byte key.[i % key.Length])
+
+    let cycle =
+        Seq.init s.Length (fun i -> byte key.[i % key.Length])
+
     let iter = Seq.zip (s |> Seq.map (byte)) cycle
+
     for i in iter do
         r <- r + sprintf "%02x" ((fst i) ^^^ (snd i))
+
     r
 
 [<EntryPoint>]
@@ -208,9 +217,11 @@ let main argv =
         let analyze = Analyze(argv.[0], 4)
         analyze.ProbableKeysizes(seq { 2 .. 40 })
         let keys = analyze.TransposeStrings()
+
         let s =
             (Seq.map (char >> string) analyze.content)
             |> String.concat ""
+
         for k in keys do
             if k.Trim() <> "" then
                 let key = k
