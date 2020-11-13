@@ -11,20 +11,90 @@ let hd s1 s2 =
     let sum = Seq.fold lhd 0 (Seq.zip s1 s2)
     sum
 
+let ALPHABET =
+    [| ('a', 0.08167)
+       ('b', 0.01492)
+       ('c', 0.02782)
+       ('d', 0.04253)
+       ('e', 0.12702)
+       ('f', 0.02228)
+       ('g', 0.02015)
+       ('h', 0.06094)
+       ('i', 0.06966)
+       ('j', 0.00153)
+       ('k', 0.00772)
+       ('l', 0.04025)
+       ('m', 0.02406)
+       ('n', 0.06749)
+       ('o', 0.07507)
+       ('p', 0.01929)
+       ('q', 0.00095)
+       ('r', 0.05987)
+       ('s', 0.06327)
+       ('t', 0.09056)
+       ('u', 0.02758)
+       ('v', 0.00978)
+       ('w', 0.02360)
+       ('x', 0.00150)
+       ('y', 0.01974)
+       ('z', 0.00074) |]
+
+let rec chisquare (xored: string): double =
+    match xored with
+    | xored when String.IsNullOrEmpty xored -> 0.0
+    | _ ->
+        let c = xored.[0]
+
+        match c with
+        | c when Char.IsLower c ->
+            let e = snd ALPHABET.[int c - int 'a']
+            ((1.0 - e) ** 2.0) / e + chisquare (xored.[1..])
+        | c when Char.IsNumber c -> 5.0 + chisquare (xored.[1..])
+        | c when Char.IsWhiteSpace c -> 0.1 + chisquare (xored.[1..])
+        | c when Char.IsPunctuation c -> 5.0 + chisquare (xored.[1..])
+        | _ -> Double.PositiveInfinity
+
+let analyzestring (s: string) =
+    let l =
+        [ seq { 'a' .. 'z' }
+          seq { 'A' .. 'Z' }
+          seq { ':' .. '@'}
+          seq { ' ' .. '/'}
+          seq { '0' .. '9' } ]
+        |> Seq.concat
+
+    let mutable bestfit = ('\000', Double.PositiveInfinity, "")
+
+    let bytes =
+        seq {
+            for i in 0 .. s.Length - 1 do
+                byte s.[i]
+        }
+        |> List.ofSeq
+
+    for c in l do
+        let xored =
+            String.concat ""
+            <| (List.map ((fun b -> char (b ^^^ byte c)) >> string) bytes)
+
+        let n = chisquare (xored.ToLower())
+        let (_, bn, _) = bestfit
+        if n < bn then bestfit <- (c, n, xored)
+
+    bestfit
+
 type Analyze =
     struct
         val content: list<byte>
         val minsizes: int
         val mutable smallerkeys: array<int>
-        val mutable key: array<string>
 
         new(fname: string, size: int) =
             { content =
                   Convert.FromBase64String(File.ReadAllText fname)
                   |> List.ofArray
               minsizes = size
-              smallerkeys = Array.zeroCreate size
-              key = Array.zeroCreate size }
+              smallerkeys = Array.zeroCreate size }
 
         member this.ProcessKeysize(keysize: int) =
             let self = this
@@ -71,6 +141,7 @@ type Analyze =
 
         member this.TransposeStrings() =
             let self = this
+            let mutable key = []
 
             let rec breakstring (s: string) (keysize: int): list<string> =
                 let mutable r = []
@@ -85,50 +156,65 @@ type Analyze =
 
                 r
 
-            let transpose (s: string) (keysize: int) =
-                // FIXME: Almost right, but should work different than how it does
-                let rec transposef (v: array<string>) (keysize: int) (element: int) =
-                    match element with
-                    | element when element >= v.[v.Length - 1].Length
-                                   && element < keysize ->
-                        [ List.fold (fun str x -> str + x.ToString()) "" (seq {
-                                for i in 0 .. v.Length - 2 do
-                                    string(v.[i].[element])
-                             }
-                             |> List.ofSeq) ]
-                        @ transposef v.[0..v.Length - 1] keysize (element + 1)
-                    | element when element < v.[v.Length - 1].Length ->
-                        [ List.fold (fun str x -> str + x.ToString()) "" (seq {
-                                for i in 0 .. v.Length - 1 do
-                                    string(v.[i].[element])
-                             }
-                             |> List.ofSeq) ]
-                        @ transposef v.[0..v.Length - 1] keysize (element + 1)
-                    | _ -> []
+            let rec transpose (v: array<string>) (keysize: int) (element: int) =
+                match element with
+                | element when element >= v.[v.Length - 1].Length
+                               && element < keysize ->
+                    let f =
+                        fun e ->
+                            Array.map (fun (c: string) -> string c.[e]) v.[0..v.Length - 2]
+                            |> List.ofArray
 
-                let v = breakstring s keysize |> Array.ofList
-                printfn "%d, %d, %d" v.Length v.[0].Length keysize
-                let r = transposef v keysize 0
-                printfn "%A" (string r)
+                    [ ("", (f element)) |> System.String.Join ]
+                    @ transpose v keysize (element + 1)
+                | element when element < v.[v.Length - 1].Length ->
+                    let f =
+                        fun e ->
+                            Array.map (fun (c: string) -> string c.[e]) v.[0..v.Length - 1]
+                            |> List.ofArray
 
-                r
+                    [ ("", (f element)) |> System.String.Join ]
+                    @ transpose v keysize (element + 1)
+                | _ -> []
+
 
             for i in this.smallerkeys do
-                let mutable s =
+                let s =
                     (Seq.map (char >> string) this.content)
                     |> String.concat ""
+                let mutable k = ""
 
-                let t = transpose s i
-                ()
+                let v = breakstring s i |> Array.ofList
+                let r = transpose v i 0
+                for j in r do
+                    let bestfit = analyzestring j
+                    let (c, _, _) = bestfit
+                    k <- k + (string c)
+                key <- key @ [k]
+            key
     end
+
+let unxorrepeatedkey (s : string) (key : string) =
+    let mutable r = ""
+    let cycle = Seq.init s.Length (fun i -> byte key.[i % key.Length])
+    let iter = Seq.zip (s |> Seq.map (byte)) cycle
+    for i in iter do
+        r <- r + sprintf "%02x" ((fst i) ^^^ (snd i))
+    r
 
 [<EntryPoint>]
 let main argv =
     if argv.Length >= 1 then
         let analyze = Analyze(argv.[0], 4)
-        printfn "%d" analyze.content.Length
         analyze.ProbableKeysizes(seq { 2 .. 40 })
-        printfn "%A" analyze.smallerkeys
-        analyze.TransposeStrings()
+        let keys = analyze.TransposeStrings()
+        let s =
+            (Seq.map (char >> string) analyze.content)
+            |> String.concat ""
+        for k in keys do
+            if k.Trim() <> "" then
+                let key = k
+                unxorrepeatedkey s key |> ignore
+                printfn "Keysize: %d\nKey: %s" key.Length key
 
     0
