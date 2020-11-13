@@ -85,20 +85,32 @@ type Analyze =
 
                 r
 
-            let transpose (s : string) (keysize : int) =
-                let rec transposef (v : array<string>) (element : int) =
-                    let mutable r = []
-                    if element < v.[v.Length - 1].Length then
-                        let se = seq { for i in 0 .. v.Length - 1 do v.[i].[element] } |> Array.ofSeq
-                        r <- [se] @ transposef v (element + 1)
-                    else
-                        let se = seq { for i in 0 .. v.Length - 2 do v.[i].[element] } |> Array.ofSeq
-                        r <- [se] @ transposef v.[0..v.Length - 2] (element + 1)
-                    r
+            let transpose (s: string) (keysize: int) =
+                // FIXME: Almost right, but should work different than how it does
+                let rec transposef (v: array<string>) (keysize: int) (element: int) =
+                    match element with
+                    | element when element >= v.[v.Length - 1].Length
+                                   && element < keysize ->
+                        [ List.fold (fun str x -> str + x.ToString()) "" (seq {
+                                for i in 0 .. v.Length - 2 do
+                                    string(v.[i].[element])
+                             }
+                             |> List.ofSeq) ]
+                        @ transposef v.[0..v.Length - 1] keysize (element + 1)
+                    | element when element < v.[v.Length - 1].Length ->
+                        [ List.fold (fun str x -> str + x.ToString()) "" (seq {
+                                for i in 0 .. v.Length - 1 do
+                                    string(v.[i].[element])
+                             }
+                             |> List.ofSeq) ]
+                        @ transposef v.[0..v.Length - 1] keysize (element + 1)
+                    | _ -> []
 
                 let v = breakstring s keysize |> Array.ofList
                 printfn "%d, %d, %d" v.Length v.[0].Length keysize
-                let r = transposef v 0
+                let r = transposef v keysize 0
+                printfn "%A" (string r)
+
                 r
 
             for i in this.smallerkeys do
@@ -107,7 +119,7 @@ type Analyze =
                     |> String.concat ""
 
                 let t = transpose s i
-                printfn "%A" t
+                ()
     end
 
 [<EntryPoint>]
