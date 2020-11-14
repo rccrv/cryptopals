@@ -1,6 +1,7 @@
 // Learn more about F# at http://docs.microsoft.com/dotnet/fsharp
 
 open System
+open Library
 
 // Define a function to construct a message to print
 let from whom =
@@ -10,4 +11,5 @@ let from whom =
 let main argv =
     let message = from "F#" // Call the function
     printfn "Hello world %s" message
+    Library.Say.hello "Test" |> ignore
     0 // return an integer exit code
