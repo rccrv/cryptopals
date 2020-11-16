@@ -1,13 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
+    <Compile Include="Library.fs" />
     <Compile Include="Hex.fs" />
     <Compile Include="Base64.fs" />
+    <Compile Include="File.fs" />
     <Compile Include="Xor.fs" />
+    <Compile Include="Stats.fs" />
   </ItemGroup>
-
 </Project>

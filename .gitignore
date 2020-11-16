@@ -2,3 +2,5 @@
 .ionide
 Cargo.lock
 *.swp
+
+.fake
