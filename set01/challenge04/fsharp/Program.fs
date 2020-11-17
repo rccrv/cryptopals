@@ -49,6 +49,8 @@ let analyzestring (s: string) =
     let l =
         [ seq { 'a' .. 'z' }
           seq { 'A' .. 'Z' }
+          seq { ':' .. '@' }
+          seq { ' ' .. '/' }
           seq { '0' .. '9' } ]
         |> Seq.concat
 
