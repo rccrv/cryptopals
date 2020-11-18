@@ -54,7 +54,7 @@ let rec chisquare (xored: string): double =
         | c when Char.IsPunctuation c -> 5.0 + chisquare (xored.[1..])
         | _ -> Double.PositiveInfinity
 
-let analyzestring (s: string) =
+let analyzestring (bytes: list<byte>) =
     let l =
         [ seq { 'a' .. 'z' }
           seq { 'A' .. 'Z' }
@@ -64,13 +64,6 @@ let analyzestring (s: string) =
         |> Seq.concat
 
     let mutable bestfit = ('\000', Double.PositiveInfinity, "")
-
-    let bytes =
-        seq {
-            for i in 0 .. s.Length - 1 do
-                byte s.[i]
-        }
-        |> List.ofSeq
 
     for c in l do
         let xored =
@@ -142,6 +135,12 @@ type Analyze =
         member this.TransposeStrings() =
             let self = this
             let mutable key = []
+            let s2b = fun (s : string) ->
+                seq {
+                    for i in 0 .. s.Length - 1 do
+                        byte s.[i]
+                }
+                |> List.ofSeq
 
             let rec breakstring (s: string) (keysize: int): list<string> =
                 let mutable r = []
@@ -189,7 +188,7 @@ type Analyze =
                 let r = transpose v i 0
 
                 for j in r do
-                    let bestfit = analyzestring j
+                    let bestfit = analyzestring (s2b j)
                     let (c, _, _) = bestfit
                     k <- k + (string c)
 

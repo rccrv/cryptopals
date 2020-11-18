@@ -1,4 +1,5 @@
 ﻿open System
+open System.IO
 
 let ALPHABET =
     [| ('a', 0.08167)
@@ -44,7 +45,7 @@ let rec chisquare (xored: string): double =
         | c when Char.IsPunctuation c -> 5.0 + chisquare (xored.[1..])
         | _ -> Double.PositiveInfinity
 
-let analyzestring (s: string) =
+let analyzestring (bytes: list<byte>) =
     let l =
         [ seq { 'a' .. 'z' }
           seq { 'A' .. 'Z' }
@@ -54,13 +55,6 @@ let analyzestring (s: string) =
         |> Seq.concat
 
     let mutable bestfit = ('\000', Double.PositiveInfinity, "")
-
-    let bytes =
-        seq {
-            for i in 0 .. 2 .. s.Length - 1 do
-                Convert.ToByte(s.[i..i + 1], 16)
-        }
-        |> List.ofSeq
 
     for c in l do
         let xored =
@@ -75,10 +69,23 @@ let analyzestring (s: string) =
 
 [<EntryPoint>]
 let main argv =
-    let s =
-        "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
+    let mutable bestfit = ('\000', Double.PositiveInfinity, "")
+    let s2b = fun (s : string) ->
+        seq {
+            for i in 0 .. 2 .. s.Length - 1 do
+                Convert.ToByte(s.[i..i + 1], 16)
+        }
+        |> List.ofSeq
 
-    let bestfit = analyzestring s
+    if argv.Length >= 1 then
+        let lines = File.ReadAllLines argv.[0]
+
+        for line in lines do
+            let r = analyzestring (s2b line)
+            let (_, rn, _) = r
+            let (_, bn, _) = bestfit
+            if rn < bn then bestfit <- r
+
     let (c, _, r) = bestfit
     printfn "Decoded by using %c\nResult: %s" c r
     0
