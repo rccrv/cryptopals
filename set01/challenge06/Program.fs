@@ -46,6 +46,7 @@ let rec chisquare (xored: string): double =
         let c = xored.[0]
 
         match c with
+        | c when int c > 128 -> Double.PositiveInfinity
         | c when Char.IsLower c ->
             let e = snd ALPHABET.[int c - int 'a']
             ((1.0 - e) ** 2.0) / e + chisquare (xored.[1..])
