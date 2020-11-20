@@ -32,12 +32,12 @@ let bytesentropy (b: list<byte>) =
 [<EntryPoint>]
 let main argv =
     // One problem of AES in ECB mode is that when blocks of 16 bytes are equal they will produce
-    // the same output of 16 bytes. I assumed that the line containing the smallest Shannon entropy
-    // would be the right one given the problem statement put emphasis on the previous information.
+    // the same output of 16 bytes. I assumed that the line having the smallest Shannon entropy
+    // would be the right one given the problem statement puts emphasis on the previous information.
     //
-    // The idea is that I just do a simple calculation instead of doing analysis 16 bytes at a time
-    // for each line. If you actually print all the entropies. The entropy of line 13 is almost 0.5
-    // larger than the next smaller value, thus it is our encrypted line.
+    // The idea is that I to just do a simple calculation instead of doing analysis 16 bytes at a
+    // time for each line. If you actually print all the entropies. The entropy of line 13 is almost
+    // 0.5 larger than the next smaller value, thus it is our encrypted line.
     let s2b =
         fun (s: string) ->
             seq {
