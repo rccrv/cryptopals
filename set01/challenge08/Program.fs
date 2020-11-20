@@ -36,8 +36,8 @@ let main argv =
     // would be the right one given the problem statement put emphasis on the previous information.
     //
     // The idea is that I just do a simple calculation instead of doing analysis 16 bytes at a time
-    // for each line. If you actually print all the entropies. Line 16 is almost 0.5 larger than
-    // the next smaller value, thus it is our encrypted line.
+    // for each line. If you actually print all the entropies. The entropy of line 13 is almost 0.5
+    // larger than the next smaller value, thus it is our encrypted line.
     let s2b =
         fun (s: string) ->
             seq {
