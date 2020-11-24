@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "T6qxSMrIZ4mfE1fMYnUqYfBtOzUIPOp5iR7ZDQhsmrH2Ea89qfVVxFaShrEpa2XWgXM/HhvTtcwMZoRL/qecPg==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\ricardo.carvalho\\Documents\\Programming\\Toys\\cryptopals\\set02\\challenge09\\challenge09.fsproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\ricardo.carvalho\\.nuget\\packages\\fsharp.core\\5.0.0\\fsharp.core.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -7,7 +7,11 @@ let bytesentropy (b: list<byte>) =
             let n = (List.filter (fun i -> (fst i)) l)
 
             let r =
-                if n.Length > 0 then float (snd n.[0]) / float (b.Length) else 0.0
+                if n.Length > 0 then
+                    let v = float (snd n.[0]) / float (b.Length)
+                    v * Math.Log2(v)
+                else
+                    0.0
 
             r
 
@@ -18,14 +22,8 @@ let bytesentropy (b: list<byte>) =
             for n in s do
                 f (List.countBy (fun i -> i = n) b)
         }
-        |> List.ofSeq
 
-    let entropy =
-        -Seq.sum
-            (seq {
-                for p in prob do
-                    p * Math.Log2(p)
-             })
+    let entropy = -Seq.sum prob
 
     entropy
 
@@ -36,7 +34,7 @@ let main argv =
     // would be the right one given the problem statement puts emphasis on the previous information.
     //
     // The idea is that I to just do a simple calculation instead of doing analysis 16 bytes at a
-    // time for each line. If you actually print all the entropies. The entropy of line 13 is almost
+    // time for each line. If you actually print all the entropies. The entropy of line 133 is almost
     // 0.5 larger than the next smaller value, thus it is our encrypted line.
     let s2b =
         fun (s: string) ->
