@@ -51,7 +51,7 @@ let main argv =
     printfn "%d" mymessagetext.Length
     let key = "YELLOW SUBMARINE"B
     let en = encrypt mymessagetext key
-    let mutable bytes = seq { for c in en do byte c } |> Array.ofSeq
+    let mutable bytes =  System.Text.Encoding.ASCII.GetBytes en
     printfn "%d" bytes.Length
     if bytes.Length % 16 <> 0 then
         bytes <- Array.append bytes (Array.zeroCreate (16 - bytes.Length % 16))
