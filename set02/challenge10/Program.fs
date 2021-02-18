@@ -2,6 +2,7 @@ open System
 open System.IO
 open System.Security.Cryptography
 
+// TODO: Well, I have to make encrypt and decrypt pring the initial text.
 let encrypt (plainText: byte []) (key: byte []): string =
     use aes = Aes.Create()
     aes.Mode <- CipherMode.ECB
@@ -20,6 +21,7 @@ let encrypt (plainText: byte []) (key: byte []): string =
 let decrypt (cipherText: byte []) (key: byte []): string =
     use aes = Aes.Create()
     aes.Mode <- CipherMode.ECB
+    aes.Padding <- PaddingMode.Zeros
 
     let decryptor =
         aes.CreateDecryptor(key, Array.zeroCreate 16)
@@ -48,14 +50,14 @@ let xor (s: string) (key: string) =
 [<EntryPoint>]
 let main argv =
     let mymessagetext = "ThisThisThisThis"B
-    printfn "%d" mymessagetext.Length
+    //printfn "%d" mymessagetext.Length
     let key = "YELLOW SUBMARINE"B
     let en = encrypt mymessagetext key
     let mutable bytes =  System.Text.Encoding.ASCII.GetBytes en
-    printfn "%d" bytes.Length
+    //printfn "%d" bytes.Length
     if bytes.Length % 16 <> 0 then
         bytes <- Array.append bytes (Array.zeroCreate (16 - bytes.Length % 16))
-    printfn "%d" bytes.Length
+    //printfn "%d" bytes.Length
     let de = decrypt bytes key
     let iv =
         seq {
@@ -64,7 +66,12 @@ let main argv =
         }
         |> Array.ofSeq
 
-    printfn "%A" iv
-    printfn "%s" en
-    printfn "%d" en.Length
+    //printfn "%A" iv
+    //printfn "%A" en
+    printfn "%A" mymessagetext
+    let output = System.Text.Encoding.Unicode.GetBytes de
+    printfn "%A" output
+    printfn "%d" mymessagetext.Length
+    printfn "%d" de.Length
+    //printfn "%d" en.Length
     0
